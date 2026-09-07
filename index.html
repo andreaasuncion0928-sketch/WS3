@@ -956,7 +956,7 @@
   <div class="grain-overlay"></div>
 
   <!-- Audio Element for Opening Show Sound -->
-  <audio id="intro-song-player" src="song.mp3" preload="auto"></audio>
+  <audio id="intro-song-player" src="song.mp3" preload="auto" loop></audio>
 
   <!-- ==========================================
        01 — HERO / TICKET SCREEN OVERLAY
@@ -1498,6 +1498,29 @@
       osc.stop(audioCtx.currentTime + 0.05);
     }
 
+    /* Audio Control Engine with Fading */
+    const introSongPlayer = document.getElementById('intro-song-player');
+    const audioPlayer = document.getElementById('archive-audio-player');
+    let fadeInterval = null;
+
+    function fadeAudio(player, targetVolume, callback) {
+      clearInterval(fadeInterval);
+      const step = 0.05;
+      fadeInterval = setInterval(() => {
+        if (player.volume < targetVolume) {
+          player.volume = Math.min(1, player.volume + step);
+        } else if (player.volume > targetVolume) {
+          player.volume = Math.max(0, player.volume - step);
+        }
+
+        if (Math.abs(player.volume - targetVolume) < 0.01) {
+          player.volume = targetVolume;
+          clearInterval(fadeInterval);
+          if (callback) callback();
+        }
+      }, 50);
+    }
+
     /* Ticket Tearing Animation & song.mp3 Playback */
     const tearBtn = document.getElementById('tear-btn');
     const ticketTop = document.getElementById('ticket-top');
@@ -1505,12 +1528,11 @@
     const heroOverlay = document.getElementById('hero-overlay');
     const announcement = document.getElementById('announcement');
     const mainContent = document.getElementById('main-content');
-    const introSongPlayer = document.getElementById('intro-song-player');
 
     tearBtn.addEventListener('click', () => {
-      // Play synthetic amp feedback + song.mp3
       playAmpFeedback();
       if (introSongPlayer) {
+        introSongPlayer.volume = 1;
         introSongPlayer.currentTime = 0;
         introSongPlayer.play().catch(e => console.log('song.mp3 playback error or blocked by browser'));
       }
@@ -1700,21 +1722,31 @@
     ];
 
     let currentImgIdx = 0;
-    const audioPlayer = document.getElementById('archive-audio-player');
 
     function openLightbox(index) {
-      // Pause intro song if it is still playing when opening lightbox music
-      if (introSongPlayer) introSongPlayer.pause();
-
       currentImgIdx = index;
       updateLightbox();
       document.getElementById('lightbox').classList.add('active');
+
+      // Fade out and pause background song.mp3
+      if (introSongPlayer && !introSongPlayer.paused) {
+        fadeAudio(introSongPlayer, 0, () => {
+          introSongPlayer.pause();
+        });
+      }
     }
 
     function closeLightbox() {
       playClickSound();
       document.getElementById('lightbox').classList.remove('active');
       audioPlayer.pause();
+
+      // Resume and fade in background song.mp3
+      if (introSongPlayer) {
+        introSongPlayer.play().then(() => {
+          fadeAudio(introSongPlayer, 1);
+        }).catch(e => console.log("Intro song resume blocked"));
+      }
     }
 
     function changeLightbox(direction) {
@@ -1729,6 +1761,7 @@
         `${String(currentImgIdx + 1).padStart(2, '0')} / ${String(archives.length).padStart(2, '0')}`;
       
       audioPlayer.src = archives[currentImgIdx].audio;
+      audioPlayer.volume = 1;
       audioPlayer.play().catch(e => console.log('Audio playback prevented or file unreadable'));
     }
 
