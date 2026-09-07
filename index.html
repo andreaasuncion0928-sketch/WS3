@@ -955,6 +955,9 @@
 
   <div class="grain-overlay"></div>
 
+  <!-- Audio Element for Opening Show Sound -->
+  <audio id="intro-song-player" src="song.mp3" preload="auto"></audio>
+
   <!-- ==========================================
        01 — HERO / TICKET SCREEN OVERLAY
        ========================================== -->
@@ -1495,16 +1498,22 @@
       osc.stop(audioCtx.currentTime + 0.05);
     }
 
-    /* Ticket Tearing Animation */
+    /* Ticket Tearing Animation & song.mp3 Playback */
     const tearBtn = document.getElementById('tear-btn');
     const ticketTop = document.getElementById('ticket-top');
     const ticketBottom = document.getElementById('ticket-bottom');
     const heroOverlay = document.getElementById('hero-overlay');
     const announcement = document.getElementById('announcement');
     const mainContent = document.getElementById('main-content');
+    const introSongPlayer = document.getElementById('intro-song-player');
 
     tearBtn.addEventListener('click', () => {
+      // Play synthetic amp feedback + song.mp3
       playAmpFeedback();
+      if (introSongPlayer) {
+        introSongPlayer.currentTime = 0;
+        introSongPlayer.play().catch(e => console.log('song.mp3 playback error or blocked by browser'));
+      }
 
       ticketTop.classList.add('ticket-top-tear');
       ticketBottom.classList.add('ticket-bottom-tear');
@@ -1694,6 +1703,9 @@
     const audioPlayer = document.getElementById('archive-audio-player');
 
     function openLightbox(index) {
+      // Pause intro song if it is still playing when opening lightbox music
+      if (introSongPlayer) introSongPlayer.pause();
+
       currentImgIdx = index;
       updateLightbox();
       document.getElementById('lightbox').classList.add('active');
