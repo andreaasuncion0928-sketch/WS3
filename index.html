@@ -165,7 +165,7 @@
       height: 100%;
       display: none;
       z-index: 2;
-      overflow-y: auto; /* Allows internal scrolling if content is taller than screen */
+      overflow-y: auto;
       padding: 3rem 1.5rem 7rem 1.5rem;
     }
 
@@ -459,7 +459,6 @@
       font-size: 0.95rem;
     }
 
-    /* Scroll Indicator Reminder */
     .scroll-notice {
       text-align: center;
       padding: 1rem;
@@ -685,7 +684,7 @@
        ========================================== */
     .contact-sheet {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 15px;
       padding: 1.2rem;
       background: rgba(17, 17, 17, 0.9);
@@ -928,19 +927,16 @@
       color: var(--bg-black);
     }
 
-    /* Disabled / Locked Navigation State */
     .deck-btn:disabled {
       opacity: 0.2;
       cursor: not-allowed;
       border-color: var(--gray-mid);
     }
 
-    /* Hidden Navigation State */
     .deck-btn.hidden {
       display: none !important;
     }
 
-    /* Pulse Glow when Unlocked */
     .deck-btn.unlocked-glow {
       animation: pulseGlow 1.5s infinite;
     }
@@ -1020,7 +1016,7 @@
           <p class="poster-copy">
             After all this time, we're finally making it official. We'd love for you to be there when we play our biggest show yet. Turn up the volume, check the setlist, and secure your backstage pass below.
           </p>
-          <button class="btn-rock" onclick="goToSlide(1)">
+          <button class="btn-rock" onclick="goToSlide(1); playClickSound();">
             ▶ PLAY OUR STORY
           </button>
         </div>
@@ -1232,10 +1228,11 @@
         <h2 class="section-title">HEADLINERS & LINEUP</h2>
 
         <div class="band-grid">
+          <!-- Groom (Adrian) -->
           <div class="band-card-wrapper" onclick="toggleCard(this)">
             <div class="band-card">
               <div class="card-front">
-                <div class="band-photo" style="background-image: url('track1.jpeg');"></div>
+                <div class="band-photo" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80');"></div>
                 <div>
                   <div class="band-name">ADRIAN</div>
                   <div class="band-role">LEAD VOCALS / GROOM</div>
@@ -1248,10 +1245,11 @@
             </div>
           </div>
 
+          <!-- Bride (Elena) -->
           <div class="band-card-wrapper" onclick="toggleCard(this)">
             <div class="band-card">
               <div class="card-front">
-                <div class="band-photo" style="background-image: url('track2.jpeg');"></div>
+                <div class="band-photo" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80');"></div>
                 <div>
                   <div class="band-name">ELENA</div>
                   <div class="band-role">LEAD GUITAR / BRIDE</div>
@@ -1264,10 +1262,11 @@
             </div>
           </div>
 
+          <!-- Best Man (Marcus) -->
           <div class="band-card-wrapper" onclick="toggleCard(this)">
             <div class="band-card">
               <div class="card-front">
-                <div class="band-photo" style="background-image: url('track3.jpeg');"></div>
+                <div class="band-photo" style="background-image: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80');"></div>
                 <div>
                   <div class="band-name">MARCUS</div>
                   <div class="band-role">BASS / BEST MAN</div>
@@ -1280,10 +1279,11 @@
             </div>
           </div>
 
+          <!-- Maid of Honor (Clara) -->
           <div class="band-card-wrapper" onclick="toggleCard(this)">
             <div class="band-card">
               <div class="card-front">
-                <div class="band-photo" style="background-image: url('track4.jpeg');"></div>
+                <div class="band-photo" style="background-image: url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80');"></div>
                 <div>
                   <div class="band-name">CLARA</div>
                   <div class="band-role">DRUMS / MAID OF HONOR</div>
@@ -1318,6 +1318,9 @@
           </div>
           <div class="archive-thumb" style="background-image: url('archieve2.jpeg');" onclick="openLightbox(3)">
             <span class="frame-num">♫ TRACK 04</span>
+          </div>
+          <div class="archive-thumb" style="background-image: url('archieve5.jpeg');" onclick="openLightbox(4)">
+            <span class="frame-num">♫ TRACK 05</span>
           </div>
         </div>
       </div>
@@ -1360,7 +1363,7 @@
     </div>
     <div class="lightbox-controls">
       <button class="lightbox-btn" onclick="changeLightbox(-1)">← PREV</button>
-      <span id="lightbox-counter">01 / 04</span>
+      <span id="lightbox-counter">01 / 05</span>
       <button class="lightbox-btn" onclick="changeLightbox(1)">NEXT →</button>
     </div>
   </div>
@@ -1516,7 +1519,7 @@
         setTimeout(() => {
           announcement.classList.remove('active');
           mainContent.classList.add('visible');
-          goToSlide(0); // Start at Intro Page
+          goToSlide(0); // Start at Intro Page ("We're Getting Married")
         }, 1800);
       }, 1000);
     });
@@ -1568,7 +1571,7 @@
       currentSlide = index;
       const activeSlide = document.getElementById(`slide-${currentSlide}`);
       activeSlide.classList.add('active');
-      activeSlide.scrollTop = 0; // Reset internal scroll to top
+      activeSlide.scrollTop = 0;
 
       document.getElementById('deck-track-num').innerText = String(currentSlide + 1).padStart(2, '0');
 
@@ -1584,40 +1587,51 @@
       const prevBtn = document.getElementById('prev-btn');
       const nextBtn = document.getElementById('next-btn');
 
-      // Previous button handling
+      // SLIDE 0 (Intro Page: "We're getting married"): Hide BOTH Prev and Next buttons completely
       if (currentSlide === 0) {
-        prevBtn.disabled = true;
-      } else {
-        prevBtn.disabled = false;
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+        return;
       }
 
-      // Next button handling
-      if (currentSlide === totalSlides - 1) {
-        nextBtn.disabled = true;
-        nextBtn.classList.remove('hidden', 'unlocked-glow');
-      } else if (currentSlide === 1 && !isStoryUnlocked) {
-        // Story Page Lock condition
-        nextBtn.classList.add('hidden');
-      } else {
-        nextBtn.classList.remove('hidden');
-        
-        // Check scroll locks for required pages
-        if (!pageLockState[currentSlide] && checkNeedsScroll(currentSlide)) {
-          nextBtn.disabled = true;
-          nextBtn.classList.remove('unlocked-glow');
+      // Restore button visibility for other slides
+      prevBtn.classList.remove('hidden');
+      prevBtn.disabled = false;
+
+      // SLIDE 1 (Our Story): Next button hidden until Track 05 is unlocked
+      if (currentSlide === 1) {
+        if (!isStoryUnlocked) {
+          nextBtn.classList.add('hidden');
         } else {
+          nextBtn.classList.remove('hidden');
           nextBtn.disabled = false;
         }
+        return;
+      }
+
+      // SLIDE 6 (Last Slide): Disable Next button
+      if (currentSlide === totalSlides - 1) {
+        nextBtn.classList.remove('hidden');
+        nextBtn.disabled = true;
+        nextBtn.classList.remove('unlocked-glow');
+        return;
+      }
+
+      // General Slides (2 through 5)
+      nextBtn.classList.remove('hidden');
+      if (!pageLockState[currentSlide] && checkNeedsScroll(currentSlide)) {
+        nextBtn.disabled = true;
+        nextBtn.classList.remove('unlocked-glow');
+      } else {
+        nextBtn.disabled = false;
       }
     }
 
-    /* Checks if slide content overflows screen requiring user to scroll */
     function checkNeedsScroll(slideIndex) {
       const slideEl = document.getElementById(`slide-${slideIndex}`);
       return slideEl.scrollHeight - slideEl.clientHeight > 50;
     }
 
-    /* Internal Scroll Detector to unlock next button */
     function checkScrollEnd(element, slideIndex) {
       if (pageLockState[slideIndex]) return;
 
@@ -1676,7 +1690,8 @@
       { img: 'archieve1.jpeg', audio: 'archievesong1.mp3' },
       { img: 'archieve2.jpeg', audio: 'archievesong2.mp3' },
       { img: 'archieve1.jpeg', audio: 'archievesong3.mp3' },
-      { img: 'archieve2.jpeg', audio: 'archievesong4.mpr' }
+      { img: 'archieve2.jpeg', audio: 'archievesong4.mpr' },
+      { img: 'archieve5.jpeg', audio: 'archievesong1.mp3' }
     ];
 
     let currentImgIdx = 0;
