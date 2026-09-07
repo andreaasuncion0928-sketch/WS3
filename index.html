@@ -1307,20 +1307,17 @@
         <p style="color: var(--gray-light); margin-bottom: 1.5rem; font-size: 0.85rem;">TAP A FRAME TO REVEAL PHOTO AND PLAY ARCHIVE TRACK</p>
 
         <div class="contact-sheet">
-          <div class="archive-thumb" style="background-image: url('archieve1.jpeg');" onclick="openLightbox(0)">
+          <div class="archive-thumb" style="background-image: url('archive1.jpeg');" onclick="openLightbox(0)">
             <span class="frame-num">♫ TRACK 01</span>
           </div>
-          <div class="archive-thumb" style="background-image: url('archieve2.jpeg');" onclick="openLightbox(1)">
+          <div class="archive-thumb" style="background-image: url('archive2.jpeg');" onclick="openLightbox(1)">
             <span class="frame-num">♫ TRACK 02</span>
           </div>
-          <div class="archive-thumb" style="background-image: url('archieve1.jpeg');" onclick="openLightbox(2)">
+          <div class="archive-thumb" style="background-image: url('archive3.jpeg');" onclick="openLightbox(2)">
             <span class="frame-num">♫ TRACK 03</span>
           </div>
-          <div class="archive-thumb" style="background-image: url('archieve2.jpeg');" onclick="openLightbox(3)">
+          <div class="archive-thumb" style="background-image: url('archive4.jpeg');" onclick="openLightbox(3)">
             <span class="frame-num">♫ TRACK 04</span>
-          </div>
-          <div class="archive-thumb" style="background-image: url('archieve5.jpeg');" onclick="openLightbox(4)">
-            <span class="frame-num">♫ TRACK 05</span>
           </div>
         </div>
       </div>
@@ -1363,7 +1360,7 @@
     </div>
     <div class="lightbox-controls">
       <button class="lightbox-btn" onclick="changeLightbox(-1)">← PREV</button>
-      <span id="lightbox-counter">01 / 05</span>
+      <span id="lightbox-counter">01 / 04</span>
       <button class="lightbox-btn" onclick="changeLightbox(1)">NEXT →</button>
     </div>
   </div>
@@ -1685,13 +1682,12 @@
       card.classList.toggle('flipped');
     }
 
-    /* Lightbox & Audio Archives */
+    /* Lightbox & Audio Archives Engine */
     const archives = [
-      { img: 'archieve1.jpeg', audio: 'archievesong1.mp3' },
-      { img: 'archieve2.jpeg', audio: 'archievesong2.mp3' },
-      { img: 'archieve1.jpeg', audio: 'archievesong3.mp3' },
-      { img: 'archieve2.jpeg', audio: 'archievesong4.mpr' },
-      { img: 'archieve5.jpeg', audio: 'archievesong1.mp3' }
+      { img: 'archive1.jpeg', audio: 'archivesong1.mp3' },
+      { img: 'archive2.jpeg', audio: 'archivesong2.mp3' },
+      { img: 'archive3.jpeg', audio: 'archivesong3.mp3' },
+      { img: 'archive4.jpeg', audio: 'archivesong4.mp3' }
     ];
 
     let currentImgIdx = 0;
