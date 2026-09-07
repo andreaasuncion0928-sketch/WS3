@@ -596,7 +596,7 @@
     }
 
     /* ==========================================
-       06 — ENTOURAGE / THE BAND (MOBILE OPTIMIZED)
+       06 — ENTOURAGE / THE BAND
        ========================================== */
     .band-grid {
       display: grid;
@@ -606,7 +606,7 @@
 
     @media(min-width: 600px) {
       .band-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1.5rem;
       }
     }
@@ -614,7 +614,6 @@
     .band-card-wrapper {
       perspective: 1000px;
       width: 100%;
-      /* Dynamic aspect ratio fits perfectly on small mobile screens */
       aspect-ratio: 1 / 1.35;
       cursor: pointer;
     }
@@ -648,7 +647,6 @@
       text-align: center;
     }
 
-    /* MOBILE-FIT FACE-CROPPED BAND PHOTOS */
     .band-photo-container {
       width: 100%;
       flex: 1;
@@ -662,7 +660,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 15%; /* Fits core facial features */
+      object-position: center 15%;
       filter: grayscale(100%) contrast(150%);
       display: block;
     }
@@ -699,15 +697,24 @@
     }
 
     /* ==========================================
-       07 — ARCHIVES
+       07 — ARCHIVES (RESPONSIVE DESKTOP & MOBILE)
        ========================================== */
     .contact-sheet {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 15px;
-      padding: 1.2rem;
+      padding: 1.5rem;
       background: rgba(17, 17, 17, 0.9);
       border: 2px solid var(--gray-mid);
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .contact-sheet {
+        grid-template-columns: repeat(4, 1fr); /* Fits 4 columns nicely across full desktop screen */
+        gap: 20px;
+        padding: 2rem;
+      }
     }
 
     .archive-thumb {
@@ -730,13 +737,14 @@
 
     .frame-num {
       position: absolute;
-      bottom: 4px;
-      right: 4px;
-      font-size: 0.65rem;
-      background: rgba(0,0,0,0.8);
-      padding: 2px 5px;
+      bottom: 6px;
+      right: 6px;
+      font-size: 0.7rem;
+      background: rgba(0,0,0,0.85);
+      padding: 3px 6px;
       color: var(--paper-white);
       font-family: var(--font-sub);
+      border: 1px solid rgba(255,255,255,0.2);
     }
 
     /* Lightbox */
@@ -1427,7 +1435,7 @@
     const audioPlayer = document.getElementById('archive-audio-player');
     let isIntroPlaying = false;
 
-    /* Archive Songs List with Blob Caching for Zero Mobile Latency */
+    /* Archive Tracks Setup */
     const archives = [
       { img: 'archive1.jpeg', audio: 'archivesong1.mp3', blobUrl: null },
       { img: 'archive2.jpeg', audio: 'archivesong2.mp3', blobUrl: null },
@@ -1444,7 +1452,7 @@
       }
     }
 
-    /* Pre-fetch and cache all archive audio files into memory on initial user tap */
+    /* Pre-fetch audio files where supported */
     function preloadArchiveTracks() {
       archives.forEach((item) => {
         fetch(item.audio)
@@ -1456,7 +1464,7 @@
             item.blobUrl = URL.createObjectURL(blob);
           })
           .catch(err => {
-            console.log(`Preload fallback for ${item.audio}`);
+            // Silently fails on local CORS (file://), fallback handles direct playback
           });
       });
     }
@@ -1487,27 +1495,6 @@
 
       osc.start();
       osc.stop(audioCtx.currentTime + 1.2);
-    }
-
-    function playGuitarPluck() {
-      initAudioEngine();
-      if (!audioCtx) return;
-
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(196, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(98, audioCtx.currentTime + 0.3);
-
-      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.3);
     }
 
     function playClickSound() {
@@ -1541,7 +1528,7 @@
     tearBtn.addEventListener('click', () => {
       initAudioEngine();
       playAmpFeedback();
-      preloadArchiveTracks(); // Preload all archive audio for zero mobile lag
+      preloadArchiveTracks();
 
       if (introSongPlayer) {
         introSongPlayer.play().then(() => {
@@ -1757,7 +1744,7 @@
         const playPromise = introSongPlayer.play();
         if (playPromise !== undefined) {
           playPromise.catch(error => {
-            console.log("Mobile playback restriction handled on touch");
+            console.log("Playback restriction handled on close");
           });
         }
       }
@@ -1775,10 +1762,21 @@
         `${String(currentImgIdx + 1).padStart(2, '0')} / ${String(archives.length).padStart(2, '0')}`;
       
       if (audioPlayer) {
-        // Use cached blobUrl if available, otherwise direct path
-        audioPlayer.src = archives[currentImgIdx].blobUrl || archives[currentImgIdx].audio;
+        // Robust fallback: Uses cached blob if available, otherwise direct relative path
+        const audioSource = archives[currentImgIdx].blobUrl ? archives[currentImgIdx].blobUrl : archives[currentImgIdx].audio;
+        
+        audioPlayer.src = audioSource;
         audioPlayer.currentTime = 0;
-        audioPlayer.play().catch(e => console.log('Archive song playback error:', e));
+        
+        const playPromise = audioPlayer.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.log("Retrying audio playback via direct URL...");
+            // Fallback retry if Blob fails on Desktop local file systems
+            audioPlayer.src = archives[currentImgIdx].audio;
+            audioPlayer.play().catch(err => console.log('Archive song playback error:', err));
+          });
+        }
       }
     }
 
