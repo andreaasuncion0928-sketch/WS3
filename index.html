@@ -955,7 +955,7 @@
 
   <div class="grain-overlay"></div>
 
-  <!-- Audio Element for Opening Show Sound -->
+  <!-- Main Opening Audio Player -->
   <audio id="intro-song-player" src="song.mp3" preload="auto" loop></audio>
 
   <!-- ==========================================
@@ -1416,21 +1416,28 @@
     </div>
   </div>
 
-  <audio id="archive-audio-player"></audio>
+  <audio id="archive-audio-player" preload="auto"></audio>
 
   <script>
-    /* Web Audio API Synthesizers */
+    /* Mobile-Optimized Web Audio API Synthesizers & State */
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
 
-    function initAudio() {
+    const introSongPlayer = document.getElementById('intro-song-player');
+    const audioPlayer = document.getElementById('archive-audio-player');
+    let isIntroPlaying = false;
+
+    function initAudioEngine() {
       if (!audioCtx) {
         audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
       }
     }
 
     function playAmpFeedback() {
-      initAudio();
+      initAudioEngine();
       if (!audioCtx) return;
 
       const osc = audioCtx.createOscillator();
@@ -1458,7 +1465,7 @@
     }
 
     function playGuitarPluck() {
-      initAudio();
+      initAudioEngine();
       if (!audioCtx) return;
 
       const osc = audioCtx.createOscillator();
@@ -1479,7 +1486,7 @@
     }
 
     function playClickSound() {
-      initAudio();
+      initAudioEngine();
       if (!audioCtx) return;
 
       const osc = audioCtx.createOscillator();
@@ -1498,30 +1505,7 @@
       osc.stop(audioCtx.currentTime + 0.05);
     }
 
-    /* Audio Control Engine with Fading */
-    const introSongPlayer = document.getElementById('intro-song-player');
-    const audioPlayer = document.getElementById('archive-audio-player');
-    let fadeInterval = null;
-
-    function fadeAudio(player, targetVolume, callback) {
-      clearInterval(fadeInterval);
-      const step = 0.05;
-      fadeInterval = setInterval(() => {
-        if (player.volume < targetVolume) {
-          player.volume = Math.min(1, player.volume + step);
-        } else if (player.volume > targetVolume) {
-          player.volume = Math.max(0, player.volume - step);
-        }
-
-        if (Math.abs(player.volume - targetVolume) < 0.01) {
-          player.volume = targetVolume;
-          clearInterval(fadeInterval);
-          if (callback) callback();
-        }
-      }, 50);
-    }
-
-    /* Ticket Tearing Animation & song.mp3 Playback */
+    /* Ticket Tearing Animation & Opening Show Audio */
     const tearBtn = document.getElementById('tear-btn');
     const ticketTop = document.getElementById('ticket-top');
     const ticketBottom = document.getElementById('ticket-bottom');
@@ -1530,11 +1514,19 @@
     const mainContent = document.getElementById('main-content');
 
     tearBtn.addEventListener('click', () => {
+      initAudioEngine();
       playAmpFeedback();
+
       if (introSongPlayer) {
-        introSongPlayer.volume = 1;
-        introSongPlayer.currentTime = 0;
-        introSongPlayer.play().catch(e => console.log('song.mp3 playback error or blocked by browser'));
+        introSongPlayer.play().then(() => {
+          isIntroPlaying = true;
+        }).catch(e => console.log('song.mp3 play error:', e));
+      }
+
+      if (audioPlayer) {
+        audioPlayer.play().then(() => {
+          audioPlayer.pause();
+        }).catch(() => {});
       }
 
       ticketTop.classList.add('ticket-top-tear');
@@ -1547,7 +1539,7 @@
         setTimeout(() => {
           announcement.classList.remove('active');
           mainContent.classList.add('visible');
-          goToSlide(0); // Start at Intro Page ("We're Getting Married")
+          goToSlide(0);
         }, 1800);
       }, 1000);
     });
@@ -1615,14 +1607,13 @@
       const prevBtn = document.getElementById('prev-btn');
       const nextBtn = document.getElementById('next-btn');
 
-      // SLIDE 0 (Intro Page: "We're getting married"): Hide BOTH Prev and Next buttons completely
+      // SLIDE 0 (Intro Page): Hide BOTH Prev and Next buttons completely
       if (currentSlide === 0) {
         prevBtn.classList.add('hidden');
         nextBtn.classList.add('hidden');
         return;
       }
 
-      // Restore button visibility for other slides
       prevBtn.classList.remove('hidden');
       prevBtn.disabled = false;
 
@@ -1724,28 +1715,32 @@
     let currentImgIdx = 0;
 
     function openLightbox(index) {
+      initAudioEngine();
       currentImgIdx = index;
       updateLightbox();
       document.getElementById('lightbox').classList.add('active');
 
-      // Fade out and pause background song.mp3
       if (introSongPlayer && !introSongPlayer.paused) {
-        fadeAudio(introSongPlayer, 0, () => {
-          introSongPlayer.pause();
-        });
+        introSongPlayer.pause();
       }
     }
 
     function closeLightbox() {
+      initAudioEngine();
       playClickSound();
       document.getElementById('lightbox').classList.remove('active');
-      audioPlayer.pause();
+      
+      if (audioPlayer) {
+        audioPlayer.pause();
+      }
 
-      // Resume and fade in background song.mp3
-      if (introSongPlayer) {
-        introSongPlayer.play().then(() => {
-          fadeAudio(introSongPlayer, 1);
-        }).catch(e => console.log("Intro song resume blocked"));
+      if (introSongPlayer && isIntroPlaying) {
+        const playPromise = introSongPlayer.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log("Mobile playback restriction handled on touch");
+          });
+        }
       }
     }
 
@@ -1760,9 +1755,10 @@
       document.getElementById('lightbox-counter').innerText = 
         `${String(currentImgIdx + 1).padStart(2, '0')} / ${String(archives.length).padStart(2, '0')}`;
       
-      audioPlayer.src = archives[currentImgIdx].audio;
-      audioPlayer.volume = 1;
-      audioPlayer.play().catch(e => console.log('Audio playback prevented or file unreadable'));
+      if (audioPlayer) {
+        audioPlayer.src = archives[currentImgIdx].audio;
+        audioPlayer.play().catch(e => console.log('Archive song playback error:', e));
+      }
     }
 
     /* RSVP Modal Handlers */
