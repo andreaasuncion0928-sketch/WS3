@@ -596,17 +596,26 @@
     }
 
     /* ==========================================
-       06 — ENTOURAGE / THE BAND
+       06 — ENTOURAGE / THE BAND (MOBILE OPTIMIZED)
        ========================================== */
     .band-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1.2rem;
+    }
+
+    @media(min-width: 600px) {
+      .band-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+      }
     }
 
     .band-card-wrapper {
       perspective: 1000px;
-      height: 280px;
+      width: 100%;
+      /* Dynamic aspect ratio fits perfectly on small mobile screens */
+      aspect-ratio: 1 / 1.35;
       cursor: pointer;
     }
 
@@ -628,7 +637,7 @@
       backface-visibility: hidden;
       border: 2px solid var(--paper-white);
       background: rgba(31, 31, 31, 0.95);
-      padding: 1.2rem;
+      padding: 1rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -639,26 +648,35 @@
       text-align: center;
     }
 
-    /* FACE-CROPPED BAND PHOTOS */
+    /* MOBILE-FIT FACE-CROPPED BAND PHOTOS */
+    .band-photo-container {
+      width: 100%;
+      flex: 1;
+      overflow: hidden;
+      border: 1px solid var(--paper-white);
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+
     .band-photo {
       width: 100%;
-      height: 150px;
-      background-size: cover;
-      background-position: center 20%; /* Centers and zooms crop on face */
+      height: 100%;
+      object-fit: cover;
+      object-position: center 15%; /* Fits core facial features */
       filter: grayscale(100%) contrast(150%);
-      border: 1px solid var(--paper-white);
+      display: block;
     }
 
     .band-role {
       font-family: var(--font-sub);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--gray-light);
-      margin-top: 0.4rem;
+      margin-top: 0.2rem;
     }
 
     .band-name {
       font-family: var(--font-heading);
-      font-size: 1.1rem;
+      font-size: 1rem;
     }
 
     .card-back {
@@ -671,12 +689,12 @@
     }
 
     .card-back h4 {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       margin-bottom: 0.5rem;
     }
 
     .card-back p {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
     }
 
@@ -685,7 +703,7 @@
        ========================================== */
     .contact-sheet {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 15px;
       padding: 1.2rem;
       background: rgba(17, 17, 17, 0.9);
@@ -1225,7 +1243,9 @@
           <div class="band-card-wrapper" onclick="toggleCard(this)">
             <div class="band-card">
               <div class="card-front">
-                <div class="band-photo" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80'); background-position: center 15%;"></div>
+                <div class="band-photo-container">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80" alt="Adrian" class="band-photo" style="object-position: center 12%;">
+                </div>
                 <div>
                   <div class="band-name">ADRIAN</div>
                   <div class="band-role">LEAD VOCALS / GROOM</div>
@@ -1242,7 +1262,9 @@
           <div class="band-card-wrapper" onclick="toggleCard(this)">
             <div class="band-card">
               <div class="card-front">
-                <div class="band-photo" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80'); background-position: center 20%;"></div>
+                <div class="band-photo-container">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" alt="Elena" class="band-photo" style="object-position: center 18%;">
+                </div>
                 <div>
                   <div class="band-name">ELENA</div>
                   <div class="band-role">LEAD GUITAR / BRIDE</div>
@@ -1259,7 +1281,9 @@
           <div class="band-card-wrapper" onclick="toggleCard(this)">
             <div class="band-card">
               <div class="card-front">
-                <div class="band-photo" style="background-image: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80'); background-position: center 15%;"></div>
+                <div class="band-photo-container">
+                  <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80" alt="Marcus" class="band-photo" style="object-position: center 15%;">
+                </div>
                 <div>
                   <div class="band-name">MARCUS</div>
                   <div class="band-role">BASS / BEST MAN</div>
@@ -1276,7 +1300,9 @@
           <div class="band-card-wrapper" onclick="toggleCard(this)">
             <div class="band-card">
               <div class="card-front">
-                <div class="band-photo" style="background-image: url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80'); background-position: center 20%;"></div>
+                <div class="band-photo-container">
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80" alt="Clara" class="band-photo" style="object-position: center 18%;">
+                </div>
                 <div>
                   <div class="band-name">CLARA</div>
                   <div class="band-role">DRUMS / MAID OF HONOR</div>
@@ -1401,6 +1427,14 @@
     const audioPlayer = document.getElementById('archive-audio-player');
     let isIntroPlaying = false;
 
+    /* Archive Songs List with Blob Caching for Zero Mobile Latency */
+    const archives = [
+      { img: 'archive1.jpeg', audio: 'archivesong1.mp3', blobUrl: null },
+      { img: 'archive2.jpeg', audio: 'archivesong2.mp3', blobUrl: null },
+      { img: 'archive3.jpeg', audio: 'archivesong3.mp3', blobUrl: null },
+      { img: 'archive4.jpeg', audio: 'archivesong4.mp3', blobUrl: null }
+    ];
+
     function initAudioEngine() {
       if (!audioCtx) {
         audioCtx = new AudioContext();
@@ -1408,6 +1442,23 @@
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
+    }
+
+    /* Pre-fetch and cache all archive audio files into memory on initial user tap */
+    function preloadArchiveTracks() {
+      archives.forEach((item) => {
+        fetch(item.audio)
+          .then(res => {
+            if (!res.ok) throw new Error('File not found');
+            return res.blob();
+          })
+          .then(blob => {
+            item.blobUrl = URL.createObjectURL(blob);
+          })
+          .catch(err => {
+            console.log(`Preload fallback for ${item.audio}`);
+          });
+      });
     }
 
     function playAmpFeedback() {
@@ -1490,6 +1541,7 @@
     tearBtn.addEventListener('click', () => {
       initAudioEngine();
       playAmpFeedback();
+      preloadArchiveTracks(); // Preload all archive audio for zero mobile lag
 
       if (introSongPlayer) {
         introSongPlayer.play().then(() => {
@@ -1679,13 +1731,6 @@
     }
 
     /* Lightbox & Audio Archives Engine */
-    const archives = [
-      { img: 'archive1.jpeg', audio: 'archivesong1.mp3' },
-      { img: 'archive2.jpeg', audio: 'archivesong2.mp3' },
-      { img: 'archive3.jpeg', audio: 'archivesong3.mp3' },
-      { img: 'archive4.jpeg', audio: 'archivesong4.mp3' }
-    ];
-
     let currentImgIdx = 0;
 
     function openLightbox(index) {
@@ -1730,7 +1775,9 @@
         `${String(currentImgIdx + 1).padStart(2, '0')} / ${String(archives.length).padStart(2, '0')}`;
       
       if (audioPlayer) {
-        audioPlayer.src = archives[currentImgIdx].audio;
+        // Use cached blobUrl if available, otherwise direct path
+        audioPlayer.src = archives[currentImgIdx].blobUrl || archives[currentImgIdx].audio;
+        audioPlayer.currentTime = 0;
         audioPlayer.play().catch(e => console.log('Archive song playback error:', e));
       }
     }
