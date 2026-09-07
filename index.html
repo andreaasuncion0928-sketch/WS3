@@ -832,32 +832,21 @@
       line-height: 1;
     }
 
-    .pass-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      text-align: left;
-    }
-
-    .form-group label {
-      font-family: var(--font-sub);
-      font-size: 0.75rem;
-      font-weight: 700;
-      margin-bottom: 0.2rem;
-    }
-
-    .form-group input, .form-group select {
-      padding: 0.6rem;
+    .pass-qr-wrapper {
+      text-align: center;
+      margin: 1.2rem 0;
+      padding: 1rem;
+      background: #ffffff;
       border: 2px solid var(--bg-black);
-      background: transparent;
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      outline: none;
+    }
+
+    .pass-qr-img {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      filter: grayscale(100%) contrast(150%);
+      display: block;
+      margin: 0 auto;
     }
 
     .close-pass {
@@ -1130,7 +1119,7 @@
       </div>
     </div>
 
-    <!-- 04 — DETAILS PAGE (SLIDE 2: VENUE DETAILS COMES FIRST) -->
+    <!-- 04 — DETAILS PAGE (SLIDE 2: VENUE DETAILS) -->
     <div class="page-slide" id="slide-2" onscroll="checkScrollEnd(this, 2)">
       <div class="container">
         <span class="section-num">03 / SHOW INFO</span>
@@ -1175,7 +1164,7 @@
       </div>
     </div>
 
-    <!-- 05 — THE DAY PAGE (SLIDE 3: SHOWTIME COMES AFTER VENUE DETAILS) -->
+    <!-- 05 — THE DAY PAGE (SLIDE 3: SHOWTIME) -->
     <div class="page-slide" id="slide-3" onscroll="checkScrollEnd(this, 3)">
       <div class="container">
         <span class="section-num">04 / THE MAIN EVENT</span>
@@ -1368,7 +1357,7 @@
     </div>
   </div>
 
-  <!-- RSVP BACKSTAGE PASS MODAL -->
+  <!-- RSVP BACKSTAGE PASS MODAL WITH SAMPLEQR.PNG -->
   <div id="pass-modal">
     <div class="backstage-pass">
       <button class="close-pass" onclick="closeRsvpModal()">×</button>
@@ -1379,29 +1368,13 @@
         <p style="font-size: 0.8rem; margin-top: 0.3rem;">ELENA & ADRIAN • WEDDING TOUR</p>
       </div>
 
-      <form class="pass-form" onsubmit="handleFormSubmit(event)">
-        <div class="form-group">
-          <label>GUEST NAME(S)</label>
-          <input type="text" required placeholder="Your Full Name">
-        </div>
+      <p style="text-align: center; font-family: var(--font-sub); font-size: 0.8rem; font-weight:700; margin-bottom: 0.5rem;">SCAN TO RSVP / CONFIRM ATTENDANCE</p>
+      
+      <div class="pass-qr-wrapper">
+        <img src="sampleqr.png" alt="RSVP QR Code" class="pass-qr-img">
+      </div>
 
-        <div class="form-group">
-          <label>ATTENDANCE STATUS</label>
-          <select required>
-            <option value="yes">YES, I'LL BE THERE IN THE FRONT ROW</option>
-            <option value="no">CAN'T MAKE IT (SENDING LOVE)</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>SONG REQUEST FOR THE DJ</label>
-          <input type="text" placeholder="Your favorite track">
-        </div>
-
-        <button type="submit" class="btn-rock" style="background: var(--bg-black); color: var(--paper-white); border-color: var(--bg-black); justify-content: center; margin-top: 1rem;">
-          CONFIRM ATTENDANCE
-        </button>
-      </form>
+      <p style="text-align: center; font-size: 0.75rem; color: var(--gray-mid); margin-top: 0.5rem;">SCAN WITH CAMERA TO ENTER GUEST LIST</p>
     </div>
   </div>
 
@@ -1770,13 +1743,6 @@
     function closeRsvpModal() {
       playClickSound();
       document.getElementById('pass-modal').classList.remove('active');
-    }
-
-    function handleFormSubmit(event) {
-      event.preventDefault();
-      playAmpFeedback();
-      alert("ATTENDANCE CONFIRMED. SEE YOU AT THE SHOW!");
-      closeRsvpModal();
     }
   </script>
 </body>
