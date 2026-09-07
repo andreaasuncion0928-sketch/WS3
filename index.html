@@ -103,6 +103,7 @@
       align-items: center;
       gap: 10px;
       text-decoration: none;
+      white-space: nowrap; /* Ensures single line on desktop/mobile */
     }
 
     .btn-rock:hover {
@@ -711,7 +712,7 @@
 
     @media (min-width: 768px) {
       .contact-sheet {
-        grid-template-columns: repeat(4, 1fr); /* Fits 4 columns nicely across full desktop screen */
+        grid-template-columns: repeat(4, 1fr);
         gap: 20px;
         padding: 2rem;
       }
@@ -1222,7 +1223,7 @@
         <div class="schedule-board">
           <div class="schedule-row">
             <span class="schedule-time">5:00 PM</span>
-            <span class="schedule-event">DOORS OPEN / GUEST ARRIVAL</span>
+            <span class="schedule-event">GUEST ARRIVAL</span>
           </div>
           <div class="schedule-row">
             <span class="schedule-time">5:30 PM</span>
@@ -1497,6 +1498,27 @@
       osc.stop(audioCtx.currentTime + 1.2);
     }
 
+    function playGuitarPluck() {
+      initAudioEngine();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(196, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(98, audioCtx.currentTime + 0.3);
+
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    }
+
     function playClickSound() {
       initAudioEngine();
       if (!audioCtx) return;
@@ -1762,7 +1784,7 @@
         `${String(currentImgIdx + 1).padStart(2, '0')} / ${String(archives.length).padStart(2, '0')}`;
       
       if (audioPlayer) {
-        // Robust fallback: Uses cached blob if available, otherwise direct relative path
+        // Uses pre-fetched Blob if allowed, otherwise falls back smoothly to direct path
         const audioSource = archives[currentImgIdx].blobUrl ? archives[currentImgIdx].blobUrl : archives[currentImgIdx].audio;
         
         audioPlayer.src = audioSource;
@@ -1771,8 +1793,7 @@
         const playPromise = audioPlayer.play();
         if (playPromise !== undefined) {
           playPromise.catch(e => {
-            console.log("Retrying audio playback via direct URL...");
-            // Fallback retry if Blob fails on Desktop local file systems
+            // Direct file path retry for desktop local file systems (file:// protocol)
             audioPlayer.src = archives[currentImgIdx].audio;
             audioPlayer.play().catch(err => console.log('Archive song playback error:', err));
           });
